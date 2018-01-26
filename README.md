@@ -20,7 +20,7 @@ Running
 
 Notes
 -----
-- All the input files are specifically formatted with a `\n` at the end. If you try to run your own input files, make sure they are formatted the same way.
+- Multi-line input files are specifically formatted with a `\n` at the end. If you try to run your own input files, make sure they are formatted the same way
 - In most cases, "perfect" input files are expected. For example, in Day 2, negative numbers are not expected
 
 - Day 2
