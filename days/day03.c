@@ -1,7 +1,7 @@
 #include "../adventofcode.h"
 
 typedef struct {
-    int** gridArr;
+    unsigned long** gridArr;
     int inputX;
     int inputY;
 } grid_t;
@@ -10,9 +10,10 @@ static int getNextOddSquareRoot(int input);
 static int calcDistMath(int input, int sqrt);
 static int findSide(int c, int sqrt, int side);
 static int getOnesPos(int dimensions);
-static grid_t makeGrid(int input, int length);
-static void printGrid(int** grid, int dimensions);
 static int calcDistGrid(int x, int y, int one);
+static grid_t makeGrid(int input, int dimensions);
+static grid_t makeGridSums(int input, int dimensions);
+static void printGrid(unsigned long** grid, int dimensions);
 
 void day03(input_t input)
 {
@@ -22,14 +23,17 @@ void day03(input_t input)
 	int dimensions = getNextOddSquareRoot(num);
 
 	int mathAnswer = calcDistMath(num, dimensions);
+    printf("    Part 1 (solved via formula): %d\n", mathAnswer);
 
     grid_t grid = makeGrid(num, dimensions);
     // printGrid(grid.gridArr, dimensions);
     int gridAnswer = calcDistGrid(grid.inputX, grid.inputY, getOnesPos(dimensions));
+    printf("    Part 1 (solved via grid): %d\n", gridAnswer);
 
-	printf("    Part 1 (solved via formula): %d\n", mathAnswer);
-	printf("    Part 1 (solved via grid): %d\n", gridAnswer);
-	// printf("    Part 2 (solved via grid): %d\n", );
+    grid_t gridSums = makeGridSums(num, dimensions);
+    // printGrid(gridSums.gridArr, dimensions);
+    unsigned long gridSumsAnswer = gridSums.gridArr[gridSums.inputX][gridSums.inputY];
+	printf("    Part 2 (solved via grid): %lu\n", gridSumsAnswer);
 }
 
 /*
@@ -121,9 +125,30 @@ static int getOnesPos(int dimensions)
 }
 
 /*
- * Function: calcDistMath
+ * Function: calcDistGrid
+ * --------------------------
+ *   Prints out all rows and columns of a two dimensional int arr
+ *
+ *   int xDist: distance on the X axis (row) the input is from 1
+ *   int yDist: distance on the Y axis (col) the input is from 1
+ *   int one: x/y position of 1 in a perfect spiral square
+ *     (1 will always be in the middle, so x and y are the same)
+ *
+ *   Returns: void
+ */
+static int calcDistGrid(int x, int y, int one)
+{
+    int xDist = abs(x - one);
+    int yDist = abs(y - one);
+
+    return xDist + yDist;
+}
+
+/*
+ * Function: makeGrid
  * --------------------------
  *   Builds a 2D array of the spiral square and determines the input's position
+ *   This builds the grid clockwise, or from the outside in (N->1)
  *
  *   int input: the number we need to find within the spiral square
  *   int dimensions: height/width of the square
@@ -133,7 +158,7 @@ static int getOnesPos(int dimensions)
  */
 static grid_t makeGrid(int input, int dimensions)
 {
-    int num = dimensions * dimensions;
+    unsigned long num = dimensions * dimensions;
 
     int rowBoundTop = 0;
     int rowBoundBottom = dimensions - 1;
@@ -150,10 +175,10 @@ static grid_t makeGrid(int input, int dimensions)
     grid_t grid;
 
     // create the empty grid (fill with 0s)
-    int** gridArr = (int **)malloc(dimensions * sizeof(int *)); 
-    for (int i=0; i<dimensions; i++)
+    unsigned long** gridArr = (unsigned long **)malloc(dimensions * sizeof(unsigned long *)); 
+    for (int i = 0; i<dimensions; i++)
     {
-         gridArr[i] = (int *)malloc(dimensions * sizeof(int));
+         gridArr[i] = (unsigned long *)malloc(dimensions * sizeof(unsigned long));
     }
     for (int i = 0; i < dimensions; i++)
     {
@@ -174,7 +199,7 @@ static grid_t makeGrid(int input, int dimensions)
             }
             gridArr[row][col] = num;
 
-            if (direction == 'a')
+            if (direction == 'a') // LEFT
             {
                 if (col == colBoundLeft)
                 {
@@ -187,7 +212,7 @@ static grid_t makeGrid(int input, int dimensions)
                     col--;
                 }
             }
-            else if (direction == 'w')
+            else if (direction == 'w') // UP
             {
                 if (row == rowBoundTop)
                 {
@@ -200,7 +225,7 @@ static grid_t makeGrid(int input, int dimensions)
                     row--;
                 }
             }
-            else if (direction == 'd')
+            else if (direction == 'd') // RIGHT
             {
                 if (col == colBoundRight)
                 {
@@ -213,7 +238,7 @@ static grid_t makeGrid(int input, int dimensions)
                     col++;
                 }
             }
-            else if (direction == 's')
+            else if (direction == 's') // DOWN
             {
                 if (row == rowBoundBottom)
                 {
@@ -239,6 +264,174 @@ static grid_t makeGrid(int input, int dimensions)
 }
 
 /*
+ * Function: makeGridSums
+ * --------------------------
+ *   Builds a 2D array of the spiral square, populating each position with
+ *   the sum of the adjacent numbers that have already been placed and
+ *   determines the input's position
+ *   This builds the grid counter-clockwise, or from the inside out (1->N)
+ *
+ *   int input: the number we need to find within the spiral square
+ *   int dimensions: height/width of the square
+ *
+ *   Returns: Grid struct containing a 2D array of the spiral square and the
+ *     X and Y coordinates of the input number in that sprial square
+ */
+static grid_t makeGridSums(int input, int dimensions)
+{
+    unsigned long num = 1;
+    unsigned long sum = 0;
+
+    int onePos = getOnesPos(dimensions);
+    int row = onePos;
+    int col = onePos;
+    char direction = 'd';   // a is left, w is up, d is right, s is down
+    int rowBoundTop = onePos;
+    int rowBoundBottom = onePos;
+    int colBoundLeft = onePos;
+    int colBoundRight = onePos;
+
+    int nextInputX = -1;
+    int nextInputY = -1;
+
+    grid_t grid;
+
+    // create the empty grid (fill with 0s)
+    unsigned long** gridArr = (unsigned long **)malloc(dimensions * sizeof(unsigned long *)); 
+    for (int i=0; i<dimensions; i++)
+    {
+         gridArr[i] = (unsigned long *)malloc(dimensions * sizeof(unsigned long));
+    }
+    for (int i = 0; i < dimensions; i++)
+    {
+        for (int j = 0; j < dimensions; j++)
+        {
+            gridArr[i][j] = 0;
+        }
+    }
+
+    // place 1 in the middle
+    gridArr[row][col] = num;
+    col++;
+    num++;
+    colBoundRight++;
+
+    // build the grid
+    while (num <= (dimensions * dimensions))
+    {
+        sum = 0;
+
+        if (row <= rowBoundBottom && row >= rowBoundTop && col <= colBoundRight && col >= colBoundLeft)
+        {
+            if (col > colBoundLeft)
+            {
+                sum += gridArr[row][col-1];
+            }
+            if (col < colBoundRight)
+            {
+                sum += gridArr[row][col+1];
+            }
+
+            if (row > rowBoundTop)
+            {
+                sum += gridArr[row-1][col];
+                if (col > colBoundLeft)
+                {
+                    sum += gridArr[row-1][col-1];
+                }
+                if (col < colBoundRight)
+                {
+                    sum += gridArr[row-1][col+1];
+                }
+            }
+
+            if (row < rowBoundBottom)
+            {
+                sum += gridArr[row+1][col];
+                if (col > colBoundLeft)
+                {
+                    sum += gridArr[row+1][col-1];
+                }
+                if (col < colBoundRight)
+                {
+                    sum += gridArr[row+1][col+1];
+                }
+            }
+
+            gridArr[row][col] = sum;
+
+            // get the FIRST sum larger than the input (once the variables aren't -1)
+            if (sum > input && nextInputX == -1 && nextInputY == -1) {
+                nextInputX = row;
+                nextInputY = col;
+            }
+
+            if (direction == 'd') // RIGHT
+            {
+                if (col == colBoundRight)
+                {
+                    row--;
+                    rowBoundTop--;
+                    direction = 'w';
+                }
+                else
+                {
+                    col++;
+                }
+            }
+            else if (direction == 'w')  // UP
+            {
+                if (row == rowBoundTop)
+                {
+                    col--;
+                    colBoundLeft--;
+                    direction = 'a';
+                }
+                else
+                {
+                    row--;
+                }
+            }
+            else if (direction == 'a') // LEFT
+            {
+                if (col == colBoundLeft)
+                {
+                    row++;
+                    rowBoundBottom++;
+                    direction = 's';
+                }
+                else
+                {
+                    col--;
+                }
+            }
+            
+            else if (direction == 's') // DOWN
+            {
+                if (row == rowBoundBottom)
+                {
+                    col++;
+                    colBoundRight++;
+                    direction = 'd';
+                }
+                else
+                {
+                    row++;
+                }
+            }
+        }
+        num++;
+    }
+
+    // set the grid struct
+    grid.gridArr = gridArr;
+    grid.inputX = nextInputX;
+    grid.inputY = nextInputY;
+
+    return grid;
+}
+
+/*
  * Function: printGrid
  * --------------------------
  *   Prints out all rows and columns of a two dimensional int arr
@@ -248,35 +441,15 @@ static grid_t makeGrid(int input, int dimensions)
  *
  *   Returns: void
  */
-static void printGrid(int** grid, int dimensions)
+static void printGrid(unsigned long** grid, int dimensions)
 {
     for(int i = 0; i < dimensions; i++)
     {
         printf("    ");
         for(int j = 0; j < dimensions; j++)
         {
-            printf("%d\t", grid[i][j]);
+            printf("%lu\t", grid[i][j]);
         }
         printf("\n");
     }
-}
-
-/*
- * Function: calcDistGrid
- * --------------------------
- *   Prints out all rows and columns of a two dimensional int arr
- *
- *   int xDist: distance on the X axis (row) the input is from 1
- *   int yDist: distance on the Y axis (col) the input is from 1
- *   int one: x/y position of 1 in a perfect spiral square
- *     (1 will always be in the middle, so x and y are the same)
- *
- *   Returns: void
- */
-static int calcDistGrid(int x, int y, int one)
-{
-    int xDist = abs(x - one);
-    int yDist = abs(y - one);
-
-    return xDist + yDist;
 }
