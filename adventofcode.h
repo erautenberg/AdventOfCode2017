@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <math.h>
 
 
 /* DEFINE BOOLEAN */
@@ -14,7 +15,7 @@ typedef int bool;
 #define FALSE 0
 
 #define STARTDAY 1
-#define ENDDAY 1
+#define ENDDAY 2
 
 
 /* MY VERSIONS OF LIBRARY FUNCTIONS */
@@ -22,9 +23,9 @@ bool my_isdigit(char);
 int my_atoi(const char*);
 
 
-/* ADVENT DAY STRUCT
-	advent day function to trigger
-	input file to pass to advent day function
+/* INPUT STRUCT
+	string to load input file into
+	length of the string
 */
 typedef struct {
 	char* str;
@@ -44,11 +45,13 @@ typedef struct {
 
 /* ADVENT DAY FUNCTIONS */
 void day01(input_t);
+void day02(input_t);
 
 
 /* ARRAY OF ADVENT DAYS */
 static const adventday_t adventdays[] = {
 	{ day01, "input/day01.txt" },
+	{ day02, "input/day02.txt" },
 };
 
 

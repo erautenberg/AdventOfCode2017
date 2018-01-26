@@ -4,6 +4,7 @@ CFLAGS		=
 
 OBJFILES	=	adventofcode.o 		\
 				days/day01.o 		\
+				days/day02.o 		\
 
 TARGET		=	advent
 

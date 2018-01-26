@@ -166,3 +166,23 @@ int my_atoi(const char* str)
   
     return num;
 }
+// int a2i(const char *s)
+// {
+// 	int sign = 1;
+
+// 	if (*s == '-')
+// 	{
+//     	sign = -1;
+// 		s++;
+// 	}
+
+// 	int num = 0;
+
+// 	while(*s)
+// 	{
+// 		num = ((*s) -'0') + num * 10;
+// 		s++;   
+// 	}
+
+// 	return num * sign;
+// }
