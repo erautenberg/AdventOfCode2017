@@ -15,12 +15,13 @@ typedef int bool;
 #define FALSE 0
 
 #define STARTDAY 1
-#define ENDDAY 3
+#define ENDDAY 4
 
 
 /* MY VERSIONS OF LIBRARY FUNCTIONS */
 bool my_isdigit(char);
 int my_atoi(const char*);
+int my_strlen(const char*);
 
 
 /* INPUT STRUCT
@@ -47,6 +48,7 @@ typedef struct {
 void day01(input_t);
 void day02(input_t);
 void day03(input_t);
+void day04(input_t);
 
 
 /* ARRAY OF ADVENT DAYS */
@@ -54,6 +56,7 @@ static const adventday_t adventdays[] = {
 	{ day01, "input/day01.txt" },
 	{ day02, "input/day02.txt" },
 	{ day03, "input/day03.txt" },
+	{ day04, "input/day04.txt" },
 };
 
 

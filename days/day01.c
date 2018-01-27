@@ -1,8 +1,6 @@
 #include "../adventofcode.h"
 
-// static int addString(char* str, int len);
 static int addString(char* str, int len, int steps);
-
 
 void day01(input_t input)
 {

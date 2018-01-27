@@ -1,6 +1,6 @@
 # AdventOfCode2017
 
-This is my repository for the [2017 Advent of Code Challenge](http://adventofcode.com/2017/).
+This is my repository for the [2017 Advent of Code Challenge](http://adventofcode.com/2017/). I had no desire to go crazy with the optimization as I chose to write all of these scripts in C as a refresher for myself (the last time I really wrote C was several years ago in college--I'm mainly a JavaScript girl now). I played around a lot with pointers and memory allocation, so even in cases where it seems like overkill or less efficient, I did this as an exercise.
 
 
 Compiling
@@ -34,4 +34,4 @@ Notes
 
 Misc
 -----
-When I first started the challenge, I solved days 1-3 before deciding I'd like to post this to github and pretty it up a bit. I was experimenting with different file loading structures, and ended up browsing the [AdventOfCode subreddit](http://reddit.com/r/adventofcode), where I came across this amazing [post by askalski](https://www.reddit.com/r/adventofcode/comments/7q6s80/2017_optimized_solutions_in_c_195_ms_total/). I had no desire to go crazy with the optimization as I chose to write all of these scripts in C as a refresher for myself (the last time I really wrote C was several years ago in college--I'm mainly a JavaScript girl now). However, I really liked his clean solution of loading individual files for each day, so I took it a step further, allowing the user to choose whether they wanted to print the answers for all days, or just one. I also have print statements available in many of individual day files in order to print out special grids and structures that helped me solve the problem. I might add another param to allow you to toggle these on and off easily. We'll see ;)
+When I first started the challenge, I solved days 1-3 before deciding I'd like to post this to github and pretty it up a bit. I was experimenting with different file loading structures, and ended up browsing the [AdventOfCode subreddit](http://reddit.com/r/adventofcode), where I came across this amazing [post by askalski](https://www.reddit.com/r/adventofcode/comments/7q6s80/2017_optimized_solutions_in_c_195_ms_total/).  I really liked his clean solution of loading individual files for each day, so I took it a step further, allowing the user to choose whether they wanted to print the answers for all days, or just one. I also have print statements available in many of individual day files in order to print out special grids and structures that helped me solve the problem. I might add another param to allow you to toggle these on and off easily. We'll see ;)

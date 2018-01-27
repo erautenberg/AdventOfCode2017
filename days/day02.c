@@ -21,10 +21,12 @@ void day02(input_t input)
 	printf("    Part 2: %d\n", quotient);
 
 	// Free Allocated Memory
-	for (int i=0; i<ROWS; i++)
+	for (int i = 0; i < ROWS; i++)
 	{
+		arr[i] = NULL;
 		free(arr[i]);
 	}
+	arr = NULL;
 	free(arr);
 }
 

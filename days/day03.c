@@ -34,6 +34,19 @@ void day03(input_t input)
     // printGrid(gridSums.gridArr, dimensions);
     unsigned long gridSumsAnswer = gridSums.gridArr[gridSums.inputX][gridSums.inputY];
 	printf("    Part 2 (solved via grid): %lu\n", gridSumsAnswer);
+
+    // Free Allocated Memory
+    for (int i = 0; i < dimensions; i++)
+    {
+        grid.gridArr[i] = NULL;
+        free(grid.gridArr[i]);
+        gridSums.gridArr[i] = NULL;
+        free(gridSums.gridArr[i]);
+    }
+    grid.gridArr = NULL;
+    free(grid.gridArr);
+    gridSums.gridArr = NULL;
+    free(gridSums.gridArr);
 }
 
 /*
