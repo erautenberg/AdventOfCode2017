@@ -189,7 +189,7 @@ static grid_t makeGrid(int input, int dimensions)
 
     // create the empty grid (fill with 0s)
     unsigned long** gridArr = (unsigned long **)malloc(dimensions * sizeof(unsigned long *)); 
-    for (int i = 0; i<dimensions; i++)
+    for (int i = 0; i < dimensions; i++)
     {
          gridArr[i] = (unsigned long *)malloc(dimensions * sizeof(unsigned long));
     }

@@ -8,29 +8,25 @@ typedef struct {
 
 static void printArr(int* arr, int len);
 static instr_t parseLines(char* str, int len);
-static int getSteps(int* arr, int len);
+static int getSteps(int* arr, int len, int part);
 static int getSteps2(int* arr, int len);
 
 void day05(input_t input)
 {
 	printf("  DAY 05\n");
 
-	instr_t instructions1 = parseLines(input.str, input.len);
-	instr_t instructions2 = parseLines(input.str, input.len);
-	// printArr(instructions1.arr, instructions1.len);
-	// printArr(instructions2.arr, instructions2.len);
+	instr_t instructions = parseLines(input.str, input.len);
+	// printArr(instructions.arr, instructions.len);
 
-	int steps = getSteps(instructions1.arr, instructions1.len);
-	printf("    Part 1: %d\n", steps);
+	int stepsP1 = getSteps(instructions.arr, instructions.len, 1);
+	printf("    Part 1: %d\n", stepsP1);
 
-	int steps2 = getSteps2(instructions2.arr, instructions2.len);
-	printf("    Part 2: %d\n", steps2);
+	int stepsP2 = getSteps(instructions.arr, instructions.len, 2);
+	printf("    Part 2: %d\n", stepsP2);
 
 	// Free Allocated Memory
-	free(instructions1.arr);
-	instructions1.arr = NULL;
-	free(instructions2.arr);
-	instructions2.arr = NULL;
+	free(instructions.arr);
+	instructions.arr = NULL;
 }
 
 /*
@@ -107,54 +103,49 @@ static instr_t parseLines(char* str, int len)
  *
  *   int* arr: array of numbers (interpretted from the input file)
  *   int len: length of the array
+ *   int part: 1 or 2 to determine which jump algorithm to use
  *
  *   Returns: number of steps it will take to exit the instruction list
  */
-static int getSteps(int* arr, int len)
+static int getSteps(int* arr, int len, int part)
 {
 	int steps = 0;
 	int instr = 0;
-
-	for (int i = 0; i < len; steps++)
+	
+	int temp[len];
+	for (int i = 0; i < len; i++)
 	{
-		instr = arr[i];
-
-		arr[i]++;
-
-		i += instr;
+		temp[i] = arr[i];
 	}
 
-	return steps;
-}
-
-/*
- * Function: getSteps2
- * --------------------------
- *   Calculates the number of steps it will take to exit the instruction array
- *   (which denotes the number of positions to jump forward or backward)
- *
- *   int* arr: array of numbers (interpretted from the input file)
- *   int len: length of the array
- *
- *   Returns: number of steps it will take to exit the instruction list
- */
-static int getSteps2(int* arr, int len)
-{
-	int steps = 0;
-	int instr = 0;
-
-	for (int i = 0; i < len; steps++)
+	// Part 1
+	if (part == 1)
 	{
-		instr = arr[i];
-
-		if (instr >= 3) {
-			arr[i]--;
+		for (int i = 0; i < len; steps++)
+		{
+			instr = temp[i];
+	
+			temp[i]++;
+	
+			i += instr;
 		}
-		else {
-			arr[i]++;
-		}
+	}
+	// Part 2
+	else if (part == 2)
+	{
+		for (int i = 0; i < len; steps++)
+		{
+			instr = temp[i];
 
-		i += instr;
+			if (instr >= 3) {
+				temp[i]--;
+			}
+			else {
+				temp[i]++;
+			}
+
+			i += instr;
+		}
 	}
 
 	return steps;

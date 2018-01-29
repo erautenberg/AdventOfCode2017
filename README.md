@@ -26,7 +26,7 @@ Notes
 - In most cases, "perfect" input files are expected. For example, in Day 2, negative numbers are not expected
 
 - Day 2
- - Set up to accept files with a row count of up to 16 and a column count of up to 16. If you have longer files, change lines 2 and 3 in `day02.c`:
+  - Set up to accept files with a row count of up to 16 and a column count of up to 16. If you have longer files, change lines 2 and 3 in `day02.c`:
  	```c
  	#define ROWS 16
 	#define COLS 16
