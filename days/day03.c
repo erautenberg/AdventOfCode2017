@@ -83,7 +83,7 @@ static int getNextOddSquareRoot(int input)
 static int calcDistMath(int input, int sqrt)
 {
     int y = sqrt * sqrt;            // total number (perfect square)
-    int c = y - (floor(sqrt / 2));  // where C is the center point lined up with the number "1" (min distance to 1)
+    int c = y - (floor(sqrt / 2));  // where C is number in the center position below "1" (min distance to 1 is 1)
 
     int b0 = findSide(c, sqrt, 0);  // bias meaning "skewed to one side"
     int b1 = findSide(c, sqrt, 1);  // finding these biases calculates the distance between b0 and bn

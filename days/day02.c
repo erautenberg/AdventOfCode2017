@@ -71,7 +71,7 @@ static int** parseLines(char* str, int len)
 	int c = 0;
 	int number = 0;
 
-	int** numArr = (int **)malloc((ROWS+1) * sizeof(int *)); 
+	int** numArr = (int **)malloc((ROWS+1) * sizeof(int *));
 	numArr[0] = (int *)malloc((COLS+1) * sizeof(int));
 	for (int i = 0; i < len; i++)
 	{ 

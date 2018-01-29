@@ -15,7 +15,7 @@ typedef int bool;
 #define FALSE 0
 
 #define STARTDAY 1
-#define ENDDAY 4
+#define ENDDAY 5
 
 
 /* MY VERSIONS OF LIBRARY FUNCTIONS */
@@ -49,6 +49,7 @@ void day01(input_t);
 void day02(input_t);
 void day03(input_t);
 void day04(input_t);
+void day05(input_t);
 
 
 /* ARRAY OF ADVENT DAYS */
@@ -57,6 +58,7 @@ static const adventday_t adventdays[] = {
 	{ day02, "input/day02.txt" },
 	{ day03, "input/day03.txt" },
 	{ day04, "input/day04.txt" },
+	{ day05, "input/day05.txt" },
 };
 
 

@@ -7,6 +7,7 @@ OBJFILES	=	adventofcode.o 		\
 				days/day02.o 		\
 				days/day03.o 		\
 				days/day04.o 		\
+				days/day05.o 		\
 
 TARGET		=	advent
 
