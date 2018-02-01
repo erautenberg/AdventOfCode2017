@@ -46,7 +46,7 @@ void day06(input_t input)
  * --------------------------
  *   Prints out all rows and columns of a two dimensional string arr
  *
- *   int*** arr: 2D array of strings or 3D array of chars (interpretted from the input file)
+ *   int*** arr: 2D array of strings or 3D array of chars (interpreted from the input file)
  *
  *   Returns: void
  */
@@ -107,7 +107,7 @@ static instr_t parseLines(char* str, int len)
  * --------------------------
  *   Calculates how many times redistribution occurs until a repeat sequene is created
  *
- *   int* arr: array of numbers (interpretted from the input file)
+ *   int* arr: array of numbers (interpreted from the input file)
  *   int len: length of the array
  *
  *   Returns: Cycles struct containing cycle count until a loop occurs,
@@ -118,35 +118,24 @@ static cycle_t calcCycles(int* arr, int len)
 	cycle_t retvals;
 	loop_t loopChunk;
 	loopChunk.same = FALSE;
-
 	int cycles = 0;
-
-	int temp[len];
-	for (int i = 0; i < len; i++)
-	{
-		temp[i] = arr[i];
-	}
-	int* temp2 = temp;
+	int* temp = arr;
 
 	// create 2D array to contain all found sequences
-	int** combos = (int **)malloc(ROWS * sizeof(int *)); 
-    for (int i = 0; i < ROWS; i++)
-    {
-         combos[i] = (int *)malloc(len * sizeof(int));
-    }
+	int** combos = (int **)malloc(ROWS * sizeof(int *));
 
     // while a repetitive sequence hasn't been created, keep redistributing
     while (!loopChunk.same)
     {
-    	combos[cycles] = temp2;
+    	combos[cycles] = temp;
     	cycles++;
-    	temp2 = redistribute(temp2, len);
-    	loopChunk = compareArrays(combos, temp2, cycles, len);
+    	temp = redistribute(temp, len);
+    	loopChunk = compareArrays(combos, temp, cycles, len);
     }
 
     // Free Allocated Memory
-    free(temp2);
-    temp2 = NULL;
+    free(temp);
+    temp = NULL;
     free(combos);
     combos = NULL;
 

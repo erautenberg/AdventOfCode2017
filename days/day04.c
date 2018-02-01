@@ -1,11 +1,11 @@
 #include "../adventofcode.h"
-#define ROWS 512
-#define COLS 20
+#define ROWS 550
+#define WORDS 20
 #define LETTERS 10
 
-static char*** parseLines(char* str, int len);
-static void printArr(char*** arr);
-static int getValidSum(char*** arr, bool anagramSort);
+static void printArr(arr_t arr);
+static arr_t parseLines(char* str, int len);
+static int getValidSum(arr_t arr, bool anagramSort);
 static bool isValid(char* p1, char* p2, bool anagramSort);
 static char* alphaStr(char* str);
 
@@ -13,7 +13,7 @@ void day04(input_t input)
 {
 	printf("  DAY 04\n");
 
-	char*** arr = parseLines(input.str, input.len);
+	arr_t arr = parseLines(input.str, input.len);
 	// printArr(arr);
 
 	int sum = getValidSum(arr, FALSE);
@@ -23,41 +23,35 @@ void day04(input_t input)
 	printf("    Part 2: %d\n", anagramSum);
 
 	// Free Allocated Memory
-    for (int i = 0; i < ROWS; i++)
+    for (int i = 0; i < arr.rowCount; i++)
     {
-    	for (int j = 0; j < COLS; j++)
+    	for (int j = 0; j < arr.rows[i].wordCount; j++)
     	{
-    		if (arr[i][j] != NULL) {
-    			arr[i][j] = NULL;
-    			free(arr[i][j]);
-    		}
+    		free(arr.rows[i].words[j]);
+    		arr.rows[i].words[j] = NULL;
     	}
-        free(arr[i]);
     }
-    arr = NULL;
-    free(arr);
+    free(arr.rows);
+    arr.rows = NULL;
 }
 
 /*
  * Function: printArr
  * --------------------------
- *   Prints out all rows and columns of a two dimensional string arr
+ *   Prints out all rows of the array input struct
  *
- *   int*** arr: 2D array of strings or 3D array of chars (interpretted from the input file)
+ *   arr_t arr: struct containing array of words (interpreted from the input file)
  *
  *   Returns: void
  */
-static void printArr(char*** arr)
+static void printArr(arr_t arr)
 {
-	for (int i = 0; arr[i] != NULL; i++)
+	for (int i = 0; i < arr.rowCount; i++)
 	{
 		printf("    ");
-		for (int j = 0; j < COLS; j++)
+		for (int j = 0; j < arr.rows[i].wordCount; j++)
 		{
-			if (arr[i][j] != NULL)
-			{
-				printf("%s ", arr[i][j]);
-			}
+			printf("%s ", arr.rows[i].words[j]);
 		}
 		printf("\n");
 	}
@@ -71,44 +65,56 @@ static void printArr(char*** arr)
  *   char* str: string to interpret
  *   int len: length of the str
  *
- *   Returns: 2D string array containing all words from the input file
+ *   Returns: array struct containing all words from the input file
  */
-static char*** parseLines(char* str, int len)
+static arr_t parseLines(char* str, int len)
 {
-	char*** strArr = (char ***)malloc((ROWS+1) * sizeof(char **));
-	strArr[0] = (char **)malloc((COLS+1) * sizeof(char*));
-	strArr[0][0] = (char *)malloc((LETTERS+1) * sizeof(char));
+	arr_t strArr;
+	strArr.rows = (row_t *)malloc(ROWS * sizeof(row_t));
+	strArr.rowCount = 0;
 
-	int r = 0;
-	int c = 0;
-	int l = 0;
+	row_t row;
+	row.wordCount = 0;
+	row.words = (char**)malloc(WORDS * sizeof(char*));
+	row.words[0] = (char*)malloc(LETTERS * sizeof(char));
+
+	int r = 0;		// row
+	int w = 0;		// word
+	int l = 0;		// letter
 	for (int i = 0; i < len; i++)
 	{
 		if (str[i] != '\n')
 		{
 			if (str[i] != ' ')
 			{
-				strArr[r][c][l] = str[i];
+				row.words[w][l] = str[i];
 				l++;
 			}
 			else
 			{
-				strArr[r][c][l] = '\0';
+				row.words[w][l] = '\0';
 				l = 0;
-				c++;
-				strArr[r][c] = (char *)malloc((LETTERS+1) * sizeof(char));
+				w++;
+				row.wordCount++;
+				row.words[w] = (char*)malloc(LETTERS * sizeof(char));
 			}
 		}
 		else
 		{
-			strArr[r][c][l] = '\0';
-			l = 0;
-			c = 0;
+			row.wordCount++;
+			strArr.rows[r] = row;
+
 			r++;
-			strArr[r] = (char **)malloc((COLS+1) * sizeof(char*));
-			strArr[r][c] = (char *)malloc((LETTERS+1) * sizeof(char));
+			l = 0;
+			w = 0;
+
+			row.words = (char**)malloc(WORDS * sizeof(char*));
+			row.words[0] = (char*)malloc(LETTERS * sizeof(char));
+
+			row.wordCount = 0;
 		}
 	}
+	strArr.rowCount = r;
 
 	return strArr;
 }
@@ -118,39 +124,36 @@ static char*** parseLines(char* str, int len)
  * --------------------------
  *   Sums all valid phrases
  *
- *   int*** arr: 3D array of numbers (interpretted from the input file)
+ *   arr_t arr: struct containing array of words (interpreted from the input file)
  *   bool anagramSort: if true, passphrases are only valid if the words
  *     aren't anagrams of each other
  *
  *   Returns: sum of all phrases that are valid
  */
-static int getValidSum(char*** arr, bool anagramSort)
+static int getValidSum(arr_t arr, bool anagramSort)
 {
 	int sum = 0;
 
-	char* passphrase1 = (char *)malloc((LETTERS+1) * sizeof(char));
-	char* passphrase2 = (char *)malloc((LETTERS+1) * sizeof(char));
+	char* passphrase1;
+	char* passphrase2;
 
-	for (int i = 0; arr[i] != NULL; i++)
+	for (int i = 0; i < arr.rowCount; i++)
 	{
 		bool cont = FALSE;
-		for (int j = 0; j < COLS; j++)
+		for (int j = 0; j < arr.rows[i].wordCount; j++)
 		{
-			if (arr[i][j] != NULL && j + 1 < COLS)
+			if (j + 1 < arr.rows[i].wordCount)
 			{
-				for (int k = j + 1; k < COLS; k++)
+				for (int k = j + 1; k < arr.rows[i].wordCount; k++)
 				{
 					cont = TRUE;
-					passphrase1 = arr[i][j];
-					passphrase2 = arr[i][k];
-					
-					if (passphrase1 != NULL && passphrase2 != NULL)
+					passphrase1 = arr.rows[i].words[j];
+					passphrase2 = arr.rows[i].words[k];
+
+					if (!isValid(passphrase1, passphrase2, anagramSort))
 					{
-						if (!isValid(passphrase1, passphrase2, anagramSort))
-						{
-							cont = FALSE;
-							break;
-						}
+						cont = FALSE;
+						break;
 					}
 				}
 			}
@@ -162,6 +165,7 @@ static int getValidSum(char*** arr, bool anagramSort)
 			sum++;
 		}
 	}
+
 	return sum;
 }
 

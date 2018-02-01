@@ -38,15 +38,18 @@ void day03(input_t input)
     // Free Allocated Memory
     for (int i = 0; i < dimensions; i++)
     {
-        grid.gridArr[i] = NULL;
         free(grid.gridArr[i]);
-        gridSums.gridArr[i] = NULL;
+        grid.gridArr[i] = NULL;
+
         free(gridSums.gridArr[i]);
+        gridSums.gridArr[i] = NULL;
     }
-    grid.gridArr = NULL;
+    
     free(grid.gridArr);
-    gridSums.gridArr = NULL;
+    grid.gridArr = NULL;
+
     free(gridSums.gridArr);
+    gridSums.gridArr = NULL;
 }
 
 /*
@@ -449,7 +452,7 @@ static grid_t makeGridSums(int input, int dimensions)
  * --------------------------
  *   Prints out all rows and columns of a two dimensional int arr
  *
- *   int** arr: 2D array of numbers (interpretted from the input file)
+ *   int** arr: 2D array of numbers (interpreted from the input file)
  *   int dimensions: height/width of the square
  *
  *   Returns: void

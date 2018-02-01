@@ -34,7 +34,7 @@ void day05(input_t input)
  * --------------------------
  *   Prints out all elements an int arr
  *
- *   int* arr: array of numbers (interpretted from the input file)
+ *   int* arr: array of numbers (interpreted from the input file)
  *   int len: length of the array
  *
  *   Returns: void
@@ -101,7 +101,7 @@ static instr_t parseLines(char* str, int len)
  *   Calculates the number of steps it will take to exit the instruction array
  *   (which denotes the number of positions to jump forward or backward)
  *
- *   int* arr: array of numbers (interpretted from the input file)
+ *   int* arr: array of numbers (interpreted from the input file)
  *   int len: length of the array
  *   int part: 1 or 2 to determine which jump algorithm to use
  *

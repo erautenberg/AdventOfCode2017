@@ -1,17 +1,17 @@
 #include "../adventofcode.h"
-#define ROWS 16
-#define COLS 16
+#define ROWS 20
+#define COLS 20
 
-static void printArr(int** arr);
-static int** parseLines(char* str, int len);
-static int getCheckSum(int** arr);
-static int getQuotient(int** arr);
+static void printArr(arrInt_t arr);
+static arrInt_t parseLines(char* str, int len);
+static int getCheckSum(arrInt_t);
+static int getQuotient(arrInt_t);
 
 void day02(input_t input)
 {
 	printf("  DAY 02\n");
 
-	int** arr = parseLines(input.str, input.len);
+	arrInt_t arr = parseLines(input.str, input.len);
 	// printArr(arr);
 
 	int sum = getCheckSum(arr);
@@ -21,13 +21,13 @@ void day02(input_t input)
 	printf("    Part 2: %d\n", quotient);
 
 	// Free Allocated Memory
-	for (int i = 0; i < ROWS; i++)
-	{
-		arr[i] = NULL;
-		free(arr[i]);
-	}
-	arr = NULL;
-	free(arr);
+	for (int i = 0; i < arr.rowCount; i++)
+    {
+    	free(arr.rows[i].nums);
+    	arr.rows[i].nums = NULL;
+    }
+    free(arr.rows);
+    arr.rows = NULL;
 }
 
 /*
@@ -35,21 +35,18 @@ void day02(input_t input)
  * --------------------------
  *   Prints out all rows and columns of a two dimensional int arr
  *
- *   int** arr: 2D array of numbers (interpretted from the input file)
+ *   int** arr: 2D array of numbers (interpreted from the input file)
  *
  *   Returns: void
  */
-static void printArr(int** arr)
+static void printArr(arrInt_t arr)
 {
-	for (int i = 0; arr[i] != NULL; i++)
+	for (int i = 0; i < arr.rowCount; i++)
 	{
 		printf("    ");
-		for (int j = 0; j < COLS; j++)
+		for (int j = 0; j < arr.rows[i].numCount; j++)
 		{
-			if (arr[i][j] != -1)
-			{
-				printf("%d ", arr[i][j]);
-			}
+			printf("%d ", arr.rows[i].nums[j]);
 		}
 		printf("\n");
 	}
@@ -65,14 +62,20 @@ static void printArr(int** arr)
  *
  *   Returns: 2D int array containing all numbers from the input file
  */
-static int** parseLines(char* str, int len)
+static arrInt_t parseLines(char* str, int len)
 {
+	arrInt_t numArr;
+	numArr.rows = (rowInt_t *)malloc(ROWS * sizeof(rowInt_t));
+	numArr.rowCount = 0;
+
+	rowInt_t row;
+	row.numCount = 0;
+	row.nums = (int*)malloc(COLS * sizeof(int));
+
 	int r = 0;
 	int c = 0;
 	int number = 0;
-
-	int** numArr = (int **)malloc((ROWS+1) * sizeof(int *));
-	numArr[0] = (int *)malloc((COLS+1) * sizeof(int));
+	
 	for (int i = 0; i < len; i++)
 	{ 
 		if (str[i] >= '0')
@@ -83,36 +86,27 @@ static int** parseLines(char* str, int len)
 		{
 			if (str[i] != '\n')
 			{
-				numArr[r][c] = number;
+				row.nums[c] = number;
+				row.numCount++;
 				c++;
 			}
 			else
 			{
-				numArr[r][c] = number;
+				row.nums[c] = number;
+				row.numCount++;
 
-				// if there are less numbers in a row than COLS defines
-				// populate the rest of the row with -1's to show no input
-				// (just in case 0's are in the input file)
-				c++;
-				if (c < COLS)
-				{
-					for (int j = c; j <= COLS; j++)
-					{
-						numArr[r][j] = -1;
-					}
-				}
+				numArr.rows[r] = row;
+
+				r++;
 				c = 0;
 
-				// if the input has less rows than ROWS defines
-				// prevent an extra row from being allocated
-				if (i < len - 1){
-					r++;
-					numArr[r] = (int *)malloc((COLS+1) * sizeof(int));
-				}
+				row.nums = (int*)malloc(COLS * sizeof(int));
+				row.numCount = 0;
 			}
 			number = 0;
 		}
 	}
+	numArr.rowCount = r;
 
 	return numArr;
 }
@@ -123,34 +117,31 @@ static int** parseLines(char* str, int len)
  *   Iterates over every row of the array to determine the largest difference of numbers
  *   and sums all of the row's differences together
  *
- *   int** arr: 2D array of numbers (interpretted from the input file)
+ *   int** arr: 2D array of numbers (interpreted from the input file)
  *
  *   Returns: sum of each line's maximum difference
  */
-static int getCheckSum(int** arr)
+static int getCheckSum(arrInt_t arr)
 {
 	int sum = 0;
 	int num = -1;
 	int smallest = -1;
 	int largest = 0;
 
-	for (int i = 0; arr[i] != NULL; i++)
+	for (int i = 0; i < arr.rowCount; i++)
 	{
 		smallest = -1;
 		largest = 0;
-		for (int j = 0; j < COLS; j++)
+		for (int j = 0; j < arr.rows[i].numCount; j++)
 		{
-			num = arr[i][j];
-			if (num != -1)
+			num = arr.rows[i].nums[j];
+			if (smallest < 0 || num < smallest)
 			{
-				if (smallest < 0 || num < smallest)
-				{
-					smallest = num;
-				}
-				if (num > largest)
-				{
-					largest = num;
-				}
+				smallest = num;
+			}
+			if (num > largest)
+			{
+				largest = num;
 			}
 		}
 		if (smallest != -1)
@@ -168,38 +159,35 @@ static int getCheckSum(int** arr)
  *   Iterates over every row of the array to determine the only whole numbered quotient
  *   and sums all of the row's quotients together
  *
- *   int** arr: 2D array of numbers (interpretted from the input file)
+ *   int** arr: 2D array of numbers (interpreted from the input file)
  *
  *   Returns: sum of each line's whole number quotient
  */
-static int getQuotient(int** arr)
+static int getQuotient(arrInt_t arr)
 {
 	int sum = 0;
 	int numJ = -1;
 	int numK = -1;
 	int quotient = 0;
 
-	for (int i = 0; arr[i] != NULL; i++)
+	for (int i = 0; i < arr.rowCount; i++)
 	{
 		quotient = 0;
-		for (int j = 0; j < COLS; j++)
+		for (int j = 0; j < arr.rows[i].numCount; j++)
 		{
-			numJ = arr[i][j];
-			if (numJ != -1)
+			numJ = arr.rows[i].nums[j];
+			for (int k = 0; k < arr.rows[i].numCount; k++)
 			{
-				for (int k = 0; k < COLS; k++)
+				numK = arr.rows[i].nums[k];
+				if (numK != -1 && k != j)
 				{
-					numK = arr[i][k];
-					if (numK != -1 && k != j)
+					if (numJ % numK == 0)
 					{
-						if (numJ % numK == 0)
-						{
-							quotient = numJ / numK;
-						}
-						else if (numK % numJ == 0)
-						{
-							quotient = numK / numJ;
-						}
+						quotient = numJ / numK;
+					}
+					else if (numK % numJ == 0)
+					{
+						quotient = numK / numJ;
 					}
 				}
 			}
